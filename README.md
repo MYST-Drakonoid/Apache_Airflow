@@ -1,39 +1,51 @@
-# Student Airflow Template
+# Student Airflow Template Setup
 
-This is a ready-to-run Apache Airflow + Docker environment designed for classroom use. Students can use this to run Airflow DAGs that connect to MongoDB and process stock data.
+This is a ready-to-run Apache Airflow + Docker environment designed for classroom use. Students can use this to run Airflow DAGs that connect to datasources and process data pipelines.
 
 ## Before You Start
+1. Click `Use this template` and save as your own repo
+2. Clone your repo, I prefer the open in GitHub Desktop method
+3. Open the cloned repo in VS Code
 
-1. Clone the repo or click "Use this template"
-2. Open the cloned repo in VS Code
+## Docker Setup
+1. Make sure you have Docker installed on your machine. You can download it from the official Docker website. Here is the link: https://docs.docker.com/get-docker/
 
-3. Run the airflow-core-fernet-key.py script to generate a fernet key. This key is used to encrypt sensitive data in Airflow, such as passwords and connection strings. You can run this script in your terminal or command prompt.
+## Setup your .env file
+1. Edit the `editme.env` by renaming it to just `.env`
 
-you need to install the `cryptography` library if you don't have it already. You can do this by running:
+## Local environment setup for local testing and key generation
+Note: this `pip install` includes all the other libraries needed for the scripts in the Test folder to run locally outside of Docker. It also lets you run a key generation setup script for Airflow.
+
+1. Open a new terminal in VS Code -> Terminal -> New Terminal
+2. Run this code in the terminal
 ```bash
 pip install cryptography paramiko==3.5.1 python-dotenv sshtunnel==0.4.0
 ```
-Note: this includes all the other libraries needed for the scripts in the Test folder to run.
 
-Then, run the script:
+3. Run the `airflow-core-fernet-key.py` script to generate a fernet key. This key is used to encrypt sensitive data in Airflow, such as passwords and connection strings.
 ```bash
 python airflow-core-fernet-key.py
 ```
 
-4. Copy the generated fernet key and paste it into the `editme.env` file in the `FERNET_KEY` variable. Then rename the file to just `.env` (remove the `editme` part).
+4. Copy the generated fernet key and paste it into the `.env` file in the `FERNET_KEY` variable.
 
-5. Make sure you have Docker and Docker Compose installed on your machine. You can download them from the official Docker website. Here is the link: https://docs.docker.com/get-docker/
-
-6. Generate SSH Keys for Snowflake Connection (windows). Run the following commands in a git-bash shell. Update the `docker-compose.yaml` file `line 85` with the path to your private key. You only have to update your user name in the path that already exists there. (Windows users do not run in powershell, use git-bash only) Provide the public key to your Snowflake admin (your teacher) to set up the key pair authentication. [Snowflake Documentation on Key Pair Auth](https://docs.snowflake.com/en/user-guide/key-pair-auth)
+## WINDOWS Generate a Public Key for Snowflake
+1. Generate SSH Keys for Snowflake Connection. Run the following commands in a `git-bash shell`. (Windows users do not run in powershell, use a git-bash shell only)
 
 ```bash
 mkdir -p ~/.ssh
 openssl genrsa 2048 | openssl pkcs8 -topk8 -inform PEM -out ~/.ssh/dbt_key.p8 -nocrypt
 openssl rsa -in ~/.ssh/dbt_key.p8 -pubout -out ~/.ssh/dbt_key.pub
-cat ~/.ssh/dbt_key.pub
+cat ~/.ssh/dbt_key.pub | clip
 ```
 
-6. Generate SSH Keys for Snowflake Connection (mac). Run the following commands in a terminal. Update the `docker-compose.yaml` file `line 85` with the path to your private key. You only have to update your user name in the path that already exists there. Provide the public key to your Snowflake admin (your teacher) to set up the key pair authentication.
+2. Update `docker-compose.yaml` line 85. Look for the `# Windows Version` example comment in line 86. It is the same path as Mac but with `C:` added in front. Update the `username` to match your Windows username and add the `C:` as in the example.
+
+3. Your public key is now copied to your clipboard — paste it when prompted by your Snowflake admin (your teacher) to set up key pair authentication.
+
+## MAC Generate a Public Key for Snowflake
+
+1. Generate SSH Keys for Snowflake Connection. Run the following commands in a `terminal shell`.
 
 ```bash
 mkdir -p ~/.ssh
@@ -42,38 +54,39 @@ openssl rsa -in ~/.ssh/dbt_key.p8 -pubout -out ~/.ssh/dbt_key.pub
 cat ~/.ssh/dbt_key.pub | pbcopy
 ```
 
-## ✅ Getting Airflow Started
+2. Update `docker-compose.yaml` line 85. Look for the `# Mac Version` comment and update `username` in the path to match your Mac username.
 
-1. In that VS Code Terminal Run:
+3. Your public key is now copied to your clipboard — paste it when prompted by your Snowflake admin (your teacher) to set up key pair authentication.
 
-### OpenMeteo Library Note (API Template)
-`requirements.txt` installs `openmeteopy` via a Git URL for the API template. If the build fails or the package is unavailable, comment out the `git+https://...openmeteopy` line and rebuild the containers. The API template will automatically fall back to the vendored copy in `dags/libs/openmeteopy`.
+Resource: [Snowflake Documentation on Key Pair Auth](https://docs.snowflake.com/en/user-guide/key-pair-auth)
 
-Note: you only run the --build flag the first time or if you change something in the Dockerfile or requirements.txt After that you can just run `docker compose up -d`
+# ✅ Getting Airflow Started
+
+## How to Build and Spin Up the Docker Container
+
+1. Make sure the docker app is open on your machine
+2. Open a new terminal in VS Code -> Terminal -> New Terminal
+3. Run this code in the terminal
 ```bash
 docker compose up --build -d
 ```
+Note: you only run the `--build` flag the first time or if you change something in the Dockerfile or requirements.txt. After that you can just run `docker compose up -d`
 
-2. Open [http://localhost:8080](http://localhost:8080)
+4. Open [http://localhost:8080](http://localhost:8080)
 
 Login with:
 - **Username:** `airflow`
 - **Password:** `airflow`
 
-## shut down
+## How to shut down docker
+1. Run this in the terminal in VS Code
 ```bash
 docker compose down
 ```
 
-<!-- https://airflow.apache.org/docs/apache-airflow/stable/tutorial/index.html -->
-<!-- https://airflow.apache.org/docs/apache-airflow/stable/tutorial/fundamentals.html -->
-<!-- https://www.youtube.com/watch?v=ouERCRRvkFQ -->
-<!-- https://www.youtube.com/watch?v=RXWYPZ3T9ys -->
-
-## Note
+## Docker container troubleshooting
 ### Stop everything and remove containers + volumes for this project
-``` bash
+1. This will stop all running containers, remove the containers, and delete any associated volumes for this project.
+```bash
 docker compose down --volumes --remove-orphans
 ```
-
-This will stop all running containers, remove the containers, and delete any associated volumes for this project.

@@ -1,6 +1,5 @@
 .env
 /dags/archive/*
-/test/student.env
 /logs/*
 /dags/__pycache__
 /dags/*
@@ -22,8 +21,11 @@
 !/staging/api/processed_dates.txt
 !/staging/mongo/processed_dates.txt
 !/staging/sftp/processed_dates.txt
-/test/sftp_downloads/*
-!test/sftp_downloads/
+/setup_tests/student.env
+/setup_tests/weather_test.csv
+/setup_tests/sftp_downloads/*
+!setup_tests/sftp_downloads/
+setup_tests/example.csv
 student_dags/*
 GEMINI.md
 AGENTS.md

@@ -25,9 +25,9 @@ SNOWFLAKE_TABLE = "BORED_API_ACTIVITIES" # Table name for Bored API data
 
 @dag(
     dag_id="starter_dag",
-    start_date=datetime(2026, 1, 1, tzinfo=timezone.utc), # Ensure timezone-aware
+    start_date=datetime(2026, 1, 6, tzinfo=timezone.utc), # Ensure timezone-aware
     schedule="@daily",
-    catchup=False,
+    catchup=True, # Set to True to backfill historical data if needed
     tags=["starter", "example", "elt", "snowflake"],
 )
 def starter_dag_elt():
@@ -43,7 +43,7 @@ def starter_dag_elt():
         This step can be enabled/disabled via the `ON_OFF_SNOWFLAKE_LOAD_ENABLED` switch.
     """
 
-    @task
+    @task(retry=3, retry_delay=timedelta(seconds=10))
     def extract_activity():
         """
         Fetches a random activity from the Bored API (community replacement).

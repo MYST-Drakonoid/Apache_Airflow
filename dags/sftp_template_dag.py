@@ -80,7 +80,8 @@ def sftp_template_pipeline():
 
         # --- Proceed with Extraction ---
         local_dir.mkdir(exist_ok=True)
-        remote_path = f"/course/ITM327/sftp_files/{date_str}"
+        #SFTP_DIR has the path of the SFTP directory stored and airflow will automatically load all .env variables 
+        remote_path = f"{SFTP_DIR}{date_str}"
         downloaded_files = []
 
         log.info(f"Connecting to SFTP to download files from: {remote_path}")

@@ -5,7 +5,7 @@ from sshtunnel import SSHTunnelForwarder
 import time
 from pathlib import Path
 
-load_dotenv('/Users/chazclar/Documents/GitHub/Apache_Airflow/test/student.env')  # Update path if needed
+load_dotenv(Path(__file__).parent / 'student.env')
 
 # SSH credentials
 SSH_HOST = os.getenv("SSH_HOST")
