@@ -98,8 +98,9 @@ def mongo_template_pipeline():
 
             # --- Define Query ---
             # This query finds documents where the 'datetime' field matches the execution day.
-            start_of_day = datetime.strptime(date_str, "%Y-%m-%d").replace(tzinfo=timezone.utc)
-            end_of_day = start_of_day + timedelta(days=1)
+            start_of_day = f"{date_str}T00:00:00Z"
+            end_date = (datetime.strptime(date_str, "%Y-%m-%d") + timedelta(days=1)).strftime('%Y-%m-%d')
+            end_of_day = f"{end_date}T00:00:00Z"
             
             # TODO: Adjust the query field ('datetime') and logic as needed for your collection.
             query = {"datetime": {"$gte": start_of_day, "$lt": end_of_day}}

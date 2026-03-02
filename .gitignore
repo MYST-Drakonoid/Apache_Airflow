@@ -29,3 +29,7 @@ setup_tests/example.csv
 student_dags/*
 GEMINI.md
 AGENTS.md
+CLAUDE.md
+student_labs/*.pdf
+student_labs/*_key.md
+student_labs/video_note.md
