@@ -3,7 +3,7 @@
 This is a ready-to-run Apache Airflow + Docker environment designed for classroom use. Students can use this to run Airflow DAGs that connect to datasources and process data pipelines.
 
 ## Walkthrough Video
-[Watch: Starter DAG Walkthrough](https://video.byui.edu/media/t/1_zx5alvpi)
+[Watch: Starter DAG Walkthrough](https://video.byui.edu/media/t/1_zx5alvpi){:target="_blank"}
 
 
 For README clarity, Option 2 is cleaner. Option 1 works but embeds a large iframe inline.
@@ -18,7 +18,7 @@ For README clarity, Option 2 is cleaner. Option 1 works but embeds a large ifram
 1. Make sure you have Docker installed on your machine. You can download it from the official Docker website. Here is the link: https://docs.docker.com/get-docker/
 
 ## Setup your .env file
-[Watch: Student .env Walkthrough](https://video.byui.edu/media/t/1_44saehlm)
+[Watch: Student .env Walkthrough](https://video.byui.edu/media/t/1_44saehlm){:target="_blank"}
 1. Edit the `editme.env` by renaming it to just `.env`
 
 
