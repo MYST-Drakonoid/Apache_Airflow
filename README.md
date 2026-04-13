@@ -5,10 +5,6 @@ This is a ready-to-run Apache Airflow + Docker environment designed for classroo
 ## Walkthrough Video
 [Watch: Starter DAG Walkthrough](https://video.byui.edu/media/t/1_zx5alvpi)
 
-
-For README clarity, Option 2 is cleaner. Option 1 works but embeds a large iframe inline.
-
-
 ## Before You Start
 1. Click `Use this template` and save as your own repo
 2. Clone your repo, I prefer the open in GitHub Desktop method
