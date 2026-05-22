@@ -48,7 +48,7 @@ log = logging.getLogger(__name__)
 # -- DAG Configuration
 STAGING_AREA = Path("staging/api")
 PROCESSED_LOG_FILE = STAGING_AREA / "processed_dates.txt"
-SNOWFLAKE_TABLE = "SNOWBEARAIR_DB/RAW/WEATHER_DAG_PETERSON"  # TODO: Replace with your target table name
+SNOWFLAKE_TABLE = "WEATHER_DAG_PETERSON"  # TODO: Replace with your target table name
 
 # A dictionary of cities and their coordinates for the API call
 CITIES = {
@@ -161,8 +161,8 @@ def api_template_pipeline():
 
         # TODO: Add your data transformation logic here.
         # For example, you could add a unique ID, convert units, or derive new columns.
-        df['temp_range_c'] = df['max_temp'] - df['min_temp']
-        df['load_ts'] = datetime.utcnow()
+        df['TEMP_RANGE_C'] = df['max_temp'] - df['min_temp']
+        df['LOAD_TS'] = datetime.utcnow()
         
         log.info(f"Transformation complete. DataFrame has {len(df)} rows.")
         return df, date_str

@@ -155,12 +155,12 @@ def build_weather_record(weather_dict, target_date, city):
     """Extract weather metrics safely from API response."""
     daily_data = weather_dict.get("daily", {})
     return {
-        "date": target_date,
-        "city": city,
-        "max_temp": daily_data.get("temperature_2m_max", [None])[0],
-        "min_temp": daily_data.get("temperature_2m_min", [None])[0],
-        "precip": daily_data.get("precipitation_sum", [None])[0],
-        "max_wind": daily_data.get("windspeed_10m_max", [None])[0],
+        "DATE": target_date,
+        "CITY": city,
+        "MAX_TEMP_C": daily_data.get("temperature_2m_max", [None])[0],
+        "MIN_TEMP_C": daily_data.get("temperature_2m_min", [None])[0],
+        "PRECIPITATION_SUM": daily_data.get("precipitation_sum", [None])[0],
+        "WINDSPEED_MAX": daily_data.get("windspeed_10m_max", [None])[0],
     }
 
 # ---------------------------------------------------------
