@@ -9,7 +9,7 @@ import paramiko
 # pip install paramiko==3.5.1 python-dotenv sshtunnel==0.4.0
 
 # Load env
-load_dotenv("../.env")
+load_dotenv(".env")
 
 SFTP_HOST = os.getenv("SFTP_HOST")
 SFTP_PORT = int(os.getenv("SFTP_PORT"))
@@ -18,7 +18,7 @@ SFTP_USER = os.getenv("SFTP_USER")
 SFTP_PASSWORD = os.getenv("SFTP_PASSWORD")
 SFTP_DIR = os.getenv("SFTP_DIR")
 LOCAL_FILE = "example.csv"
-REMOTE_FILE = "AAPL_2025-01-01.csv"
+REMOTE_FILE = "AAPL_2025-02-01.csv"
 
 # Logging
 logging.basicConfig(

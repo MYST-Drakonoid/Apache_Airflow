@@ -20,6 +20,17 @@ import shutil
 from datetime import datetime, timedelta
 from pathlib import Path
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+SFTP_HOST = os.getenv("SFTP_HOST")
+SFTP_PORT = int(os.getenv("SFTP_PORT"))
+SFTP_USER = os.getenv("SFTP_USER")
+SFTP_PASSWORD = os.getenv("SFTP_PASSWORD")
+SFTP_DIR = os.getenv("SFTP_DIR")
+
 import pandas as pd
 from airflow.sdk import dag, task
 
@@ -34,7 +45,7 @@ log = logging.getLogger(__name__)
 # IMPORTANT: This path is relative to the Airflow project root.
 STAGING_AREA = Path("staging/sftp")
 PROCESSED_LOG_FILE = STAGING_AREA / "processed_dates.txt"
-SNOWFLAKE_TABLE = "YOUR_TABLE_NAME_HERE"  # TODO: Replace with your target table name
+SNOWFLAKE_TABLE = "NEWS_DAG_PETERSON_A"  # TODO: Replace with your target table name
 
 
 
@@ -98,7 +109,7 @@ def sftp_template_pipeline():
                 local_file = local_dir / filename
                 log.info(f"Downloading {remote_file} to {local_file}")
                 # TODO: Uncomment the line below to perform the actual download
-                # sftp.get(str(remote_file), str(local_file))
+                sftp.get(str(remote_file), str(local_file))
                 downloaded_files.append(str(local_file))
 
             sftp.close()
@@ -127,11 +138,11 @@ def sftp_template_pipeline():
             log.info(f"Reading {file_path}...")
             # TODO: Read each file into a DataFrame and append to `all_dfs`
             # Example:
-            # try:
-            #     df = pd.read_csv(file_path)
-            #     all_dfs.append(df)
-            # except pd.errors.EmptyDataError:
-            #     log.warning(f"File is empty: {file_path}")
+            try:
+                df = pd.read_csv(file_path)
+                all_dfs.append(df)
+            except pd.errors.EmptyDataError:
+                log.warning(f"File is empty: {file_path}")
             pass
 
         if not all_dfs:
@@ -143,6 +154,51 @@ def sftp_template_pipeline():
         # TODO: Add your transformation logic here.
         # For example, rename columns, filter data, create new features.
         log.info("Applying transformations...")
+
+
+
+        combined_df["news_datetime"] = pd.to_datetime(
+            combined_df["datetime"],
+            unit="s",
+            errors="coerce"
+        )
+
+
+        combined_df["news_date"] = combined_df["news_datetime"].dt.date
+
+
+        combined_df = combined_df.rename(columns={
+            "id": "news_id",
+            "related": "ticker_symbol",
+            "source": "news_source",
+            "url": "news_url",
+            "image": "image_url"
+        })
+
+
+        combined_df["image_url"] = combined_df["image_url"].replace("", None)
+
+   
+        combined_df = combined_df.drop_duplicates(subset=["news_id"])
+
+
+        combined_df = combined_df[
+            [
+                "news_id",
+                "category",
+                "news_datetime",
+                "news_date",
+                "headline",
+                "ticker_symbol",
+                "news_source",
+                "summary",
+                "news_url",
+                "image_url"
+            ]
+        ]
+
+
+
         
         log.info(f"Transformation complete. Resulting DataFrame has {len(combined_df)} rows.")
         return combined_df, date_str
@@ -160,13 +216,22 @@ def sftp_template_pipeline():
         log.info(f"Loading {len(df)} rows into Snowflake table: {SNOWFLAKE_TABLE}")
         
         # TODO: Implement the Snowflake loading logic.
-        # conn = get_snowflake_connection()
+        conn = get_snowflake_connection()
         try:
-            # from snowflake.connector.pandas_tools import write_pandas
-            # success, n_chunks, n_rows, _ = write_pandas(conn, df, SNOWFLAKE_TABLE)
-            # if not success:
-            #     raise Exception("Snowflake write_pandas failed.")
-            # log.info(f"Successfully loaded {n_rows} rows to {SNOWFLAKE_TABLE}.")
+
+                    
+            df = df.reset_index(drop=True)  
+            df.columns = [col.upper() for col in df.columns]
+
+            
+            
+        
+
+            from snowflake.connector.pandas_tools import write_pandas
+            success, n_chunks, n_rows, _ = write_pandas(conn, df, SNOWFLAKE_TABLE)
+            if not success:
+                raise Exception("Snowflake write_pandas failed.")
+            log.info(f"Successfully loaded {n_rows} rows to {SNOWFLAKE_TABLE}.")
 
             # --- Log Processed Date on Success ---
             with open(PROCESSED_LOG_FILE, "a") as f:
