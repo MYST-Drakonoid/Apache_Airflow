@@ -158,11 +158,18 @@ def api_template_pipeline():
 
         log.info(f"Transforming data from {filepath}...")
         df = pd.read_csv(filepath)
+        log.info(f"Columns before transform: {df.columns.tolist()}")
 
-        # TODO: Add your data transformation logic here.
-        # For example, you could add a unique ID, convert units, or derive new columns.
-        df['TEMP_RANGE_C'] = df['max_temp'] - df['min_temp']
-        df['LOAD_TS'] = datetime.utcnow()
+        
+        df["TEMP_RANGE_C"] = df["MAX_TEMP_C"] - df["MIN_TEMP_C"]
+        df["LOAD_TS"] = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+
+        df = df.rename(columns={
+            "DATE": "WEATHER_DATE",
+            "MAX_TEMP_C": "TEMP_MAX_C",
+            "MIN_TEMP_C": "TEMP_MIN_C"})
+
+        log.info(f"Columns after transform: {df.columns.tolist()}")
         
         log.info(f"Transformation complete. DataFrame has {len(df)} rows.")
         return df, date_str
